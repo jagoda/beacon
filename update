@@ -1,0 +1,22 @@
+#!/bin/bash -ev
+DIRECTORY=$(dirname "${BASH_SOURCE[0]}")
+
+pushd "${DIRECTORY}" > /dev/null
+trap "popd > /dev/null" EXIT
+
+ADDRESS=`curl -s http://checkip.dyndns.org | grep -E -o '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'`
+HOSTNAME=`hostname`
+FILE="${HOSTNAME}.txt"
+
+git pull
+echo "${ADDRESS}" > ${HOSTNAME}
+
+STATUS=`git status --porcelain`
+if [ -n "${STATUS}" ]; then
+	echo "Setting '${HOSTNAME}' to '${ADDRESS}'."
+	git add .
+	git commit -m "${HOSTNAME}"
+	git push
+else
+	echo "No updates."
+fi

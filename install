@@ -1,0 +1,13 @@
+#!/bin/bash -ev
+
+# Grab a copy of the beacon code.
+git clone git@github.com:jagoda/beacon.git
+pushd beacon > /dev/null
+
+DIRECTORY=`pwd`
+crontab - <<EOF
+0 * * * * ${DIRECTORY}/update > ${DIRECTORY}/log.txt 2>&1
+EOF
+
+# Restore the current working directory.
+popd > /dev/null
